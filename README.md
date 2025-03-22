@@ -2,7 +2,7 @@ $ export GITHUB_USERNAME=Fabirto
 $ export GITHUB_EMAIL=sweatytryhardyes@gmail.com
 $ export GITHUB_TOKEN=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
 $ alias edit=vim
--то же, что и в 1 лр-
+то же, что и в 1 лр
 
 
 $ cd ${GITHUB_USERNAME}/workspace
@@ -12,7 +12,7 @@ cоздает директорию workspace, активирует скрипт 
 $ mkdir ~/.config
 $ cat > ~/.config/hub <<EOF
 github.com:
-- user: ${GITHUB_USERNAME}
+user: ${GITHUB_USERNAME}
   oauth_token: ${GITHUB_TOKEN}
   protocol: https
 EOF
@@ -46,7 +46,7 @@ $ git push origin main
 
 $ git pull origin master
 $ git log
--обновляет master, показывает историю изменений-
+обновляет master, показывает историю изменений
 
 
 
@@ -67,7 +67,7 @@ void print(const std::string& text, std::ofstream& out)
   out << text;
 }
 EOF
--создает директории, создает файл и записывает в него команды-
+создает директории, создает файл и записывает в него команды
 
 
 $ cat > include/print.hpp <<EOF
@@ -114,7 +114,7 @@ EOF
 
 
 $ edit README.md
-- открывает файл README-
+ открывает файл README
 
 
 
@@ -125,7 +125,7 @@ $ git status
 $ git add .
 $ git commit -m"added sources"
 $ git push origin master
--показывает статус, добавляет изменения, сохраняет, загружает в репозиторий-
+показывает статус, добавляет изменения, сохраняет, загружает в репозиторий
 
 
 
@@ -141,7 +141,7 @@ $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
 $ cd reports/lab${LAB_NUMBER}
 $ edit REPORT.md
 $ gist REPORT.md
--клонирует репозиторий, клонирует и переносит REPORT, открывает REPORT-
+клонирует репозиторий, клонирует и переносит REPORT, открывает REPORT
 
 
 
