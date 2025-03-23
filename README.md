@@ -26,7 +26,7 @@ $ git config --global user.email ${GITHUB_EMAIL}
 # check your git global settings
 $ git config -e --global
 $ git remote add origin https://github.com/${GITHUB_USERNAME}/lab02.git
-$ git pull origin main(----MAIN вместо MASTER, MASTER устарел------)
+$ git pull origin main(MAIN вместо MASTER, MASTER устарел)
 $ touch README.md
 $ git status
 $ git add README.md
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
   print(std::string("hello"), file);
 }
 EOF
--создает файл exapmle2.cpp в examples, записывает в него код-
+создает файл exapmle2.cpp в examples, записывает в него код
 
 
 
