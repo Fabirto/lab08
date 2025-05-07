@@ -1,3 +1,4 @@
+<фрагмент_вставки_значка>
 $ export GITHUB_USERNAME=Fabirto
 $ export GITHUB_EMAIL=sweatytryhardyes@gmail.com
 $ export GITHUB_TOKEN=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
