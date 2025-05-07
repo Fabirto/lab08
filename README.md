@@ -1,148 +1,103 @@
-<фрагмент_вставки_значка>
 $ export GITHUB_USERNAME=Fabirto
-$ export GITHUB_EMAIL=sweatytryhardyes@gmail.com
-$ export GITHUB_TOKEN=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
-$ alias edit=vim
-то же, что и в 1 лр
+$ export GITHUB_TOKEN=токен
 
+создает переменные
 
 $ cd ${GITHUB_USERNAME}/workspace
+$ pushd .
 $ source scripts/activate
+изменяет директорию, запускает файл
 
-cоздает директорию workspace, активирует скрипт activate
-$ mkdir ~/.config
-$ cat > ~/.config/hub <<EOF
-github.com:
-user: ${GITHUB_USERNAME}
-  oauth_token: ${GITHUB_TOKEN}
-  protocol: https
+$ \curl -sSL https://get.rvm.io | bash -s -- --ignore-dotfiles
+скачивает rvm
+
+$ echo "source $HOME/.rvm/scripts/rvm" >> scripts/activate
+Добавляет команду для загрузки RVM в файл
+
+$ . scripts/activate
+Запускает скрипт
+
+$ rvm autolibs disable
+Отключает автоматическую установку системных библиотек
+
+$ rvm install ruby-2.4.2
+$ rvm use 2.4.2 --default
+Устанавливает Ruby 2.4.2
+
+$ gem install travis
+Устанавливает инструмент командной строки travis
+
+$ git clone https://github.com/${GITHUB_USERNAME}/lab03 projects/lab04
+$ cd projects/lab04
+$ git remote remove origin
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab04
+копирует репозиторий, добавляет оригин
+
+$ cat > .travis.yml <<EOF
+language: cpp
 EOF
-$ git config --global hub.protocol https
- создает .config, создает файл hub в .config и записывает в него конфигурацию для hub, настраивает git на использование протокола HTTPS для  hub
+создает файл
 
-$ mkdir projects/lab02 && cd projects/lab02
-$ git init
-$ git config --global user.name ${GITHUB_USERNAME}
-$ git config --global user.email ${GITHUB_EMAIL}
-# check your git global settings
-$ git config -e --global
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab02.git
-$ git pull origin main(MAIN вместо MASTER, MASTER устарел)
-$ touch README.md
-$ git status
+$ cat >> .travis.yml <<EOF
+
+script:
+- cmake -H. -B_build -DCMAKE_INSTALL_PREFIX=_install
+- cmake --build _build
+- cmake --build _build --target install
+EOF
+создает файл
+
+$ cat >> .travis.yml <<EOF
+
+addons:
+  apt:
+    sources:
+      - george-edison55-precise-backports
+    packages:
+      - cmake
+      - cmake-data
+EOF
+создает файл
+
+$ travis login --github-token ${GITHUB_TOKEN}
+авторизация в тревис
+
+$ travis lint
+Проверяет корректность файла .travis.yml
+
+$ ex -sc '1i|<фрагмент_вставки_значка>' -cx README.md
+вставляет текст в readme
+
+$ git add .travis.yml
 $ git add README.md
-$ git commit -m"added README.md"
-$ git push origin main
-настраивает репозиторий, добавляет файл, загружает в репозиторий
-
-*build*/
-*install*/
-*.swp
-.idea/
--указывает то, что нужно игнорировать-
-
-
-
-
-
-$ git pull origin master
-$ git log
-обновляет master, показывает историю изменений
-
-
-
-
-$ mkdir sources
-$ mkdir include
-$ mkdir examples
-$ cat > sources/print.cpp <<EOF
-#include <print.hpp>
-
-void print(const std::string& text, std::ostream& out)
-{
-  out << text;
-}
-
-void print(const std::string& text, std::ofstream& out)
-{
-  out << text;
-}
-EOF
-создает директории, создает файл и записывает в него команды
-
-
-$ cat > include/print.hpp <<EOF
-#include <fstream>
-#include <iostream>
-#include <string>
-
-void print(const std::string& text, std::ofstream& out);
-void print(const std::string& text, std::ostream& out = std::cout);
-EOF
-
-
-
-
-
-
-$ cat > examples/example1.cpp <<EOF
-#include <print.hpp>
-
-int main(int argc, char** argv)
-{
-  print("hello");
-}
-EOF
--создает файл exapmle1.cpp в examples, записывает в него код-
-
-
-
-$ cat > examples/example2.cpp <<EOF
-#include <print.hpp>
-
-#include <fstream>
-
-int main(int argc, char** argv)
-{
-  std::ofstream file("log.txt");
-  print(std::string("hello"), file);
-}
-EOF
-создает файл exapmle2.cpp в examples, записывает в него код
-
-
-
-
-
-$ edit README.md
- открывает файл README
-
-
-
-
-
-  
-$ git status
-$ git add .
-$ git commit -m"added sources"
+$ git commit -m"added CI"
 $ git push origin master
-показывает статус, добавляет изменения, сохраняет, загружает в репозиторий
+сохраняет файлы в репозиторий
+
+$ travis lint
+ Проверяет конфигурацию .travis.yml
+$ travis accounts
+ Выводит информацию о репозиториях
+$ travis sync
+ Синхронизирует и обновляет данные 
+$ travis repos
+ Выводит информацию о репозиториях
+$ travis enable
+ Включает CI/CD для репозитория
+$ travis whatsup
+$ travis branches
+$ travis history
+$ travis show
+ Показывает статус сборок
 
 
 
 
-
-
-
-$ cd ~/workspace/
-$ export LAB_NUMBER=02
-$ git clone https://github.com/tp-labs/lab${LAB_NUMBER}.git tasks/lab${LAB_NUMBER}
+ $ popd
+$ export LAB_NUMBER=04
+$ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
 $ cd reports/lab${LAB_NUMBER}
 $ edit REPORT.md
 $ gist REPORT.md
-клонирует репозиторий, клонирует и переносит REPORT, открывает REPORT
-
-
-
