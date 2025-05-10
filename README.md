@@ -6,10 +6,10 @@ $ pushd .
 $ source scripts/activate
 изменяет дирректорию, активирует скрипт
 
-$ git clone https://github.com/${GITHUB_USERNAME}/lab04 projects/lab05
-$ cd projects/lab05
+$ git clone https://github.com/${GITHUB_USERNAME}/lab04 projects/lab06
+$ cd projects/lab06
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab05
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
 клонирует репозиторий, добавляет оригин
 
 $ mkdir third-party
@@ -75,8 +75,8 @@ $ _build/check
 $ cmake --build _build --target test -- ARGS=--verbose
 Запускает исполняемый файл с аргументами
 
-$ gsed -i 's/lab04/lab05/g' README.md
-Заменяет все вхождения lab04 на lab05 в README.md
+$ gsed -i 's/lab04/lab06/g' README.md
+Заменяет все вхождения lab04 на lab06 в README.md
 
 
 $ gsed -i 's/\(DCMAKE_INSTALL_PREFIX=_install\)/\1 -DBUILD_TESTS=ON/' .travis.yml
@@ -106,7 +106,7 @@ $ travis enable
 $ mkdir artifacts
 $ sleep 20s && gnome-screenshot --file artifacts/screenshot.png
 # for macOS: $ screencapture -T 20 artifacts/screenshot.png
-# open https://github.com/${GITHUB_USERNAME}/lab05
+# open https://github.com/${GITHUB_USERNAME}/lab06
 создает папку, делает скриншот
 
 Report
