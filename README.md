@@ -1,144 +1,112 @@
-$ export GITHUB_USERNAME=Fabirto 
-$ export GITHUB_EMAIL=<адрес_почтового_ящика>
-$ alias edit=vim|subl
-$ alias gsed=sed # for *-nix system
-создает переменные
-
+export GITHUB_USERNAME=<имя_пользователя>
+$ alias gsed=sed
+  создает переменную
 $ cd ${GITHUB_USERNAME}/workspace
 $ pushd .
 $ source scripts/activate
-меняет директорию, активирует скрипт
+активирует скрипт
 
-$ git clone https://github.com/${GITHUB_USERNAME}/lab05 projects/lab06
-$ cd projects/lab06
+
+$ git clone https://github.com/${GITHUB_USERNAME}/lab06 projects/lab07
+$ cd projects/lab07
 $ git remote remove origin
-$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
-клонирует репозиторий, создает оригин
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab07
+клонирует репозиторий и меняет оригин
 
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION_STRING "v\${PRINT_VERSION}")
+$ mkdir -p cmake
+$ wget https://raw.githubusercontent.com/cpp-pm/gate/master/cmake/HunterGate.cmake -O cmake/HunterGate.cmake
+$ gsed -i '/cmake_minimum_required(VERSION 3.4)/a\
+
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.251.tar.gz"
+    SHA1 "5659b15dc0884d4b03dbd95710e6a1fa0fc3258d"
+)
 ' CMakeLists.txt
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION\
-  \${PRINT_VERSION_MAJOR}.\${PRINT_VERSION_MINOR}.\${PRINT_VERSION_PATCH}.\${PRINT_VERSION_TWEAK})
+создает директорию cmake, скачивает huntergate, добавляет строки кода в cmakelists
+
+
+$ git rm -rf third-party/gtest
+$ gsed -i '/set(PRINT_VERSION_STRING "v\${PRINT_VERSION}")/a\
+
+hunter_add_package(GTest)
+find_package(GTest CONFIG REQUIRED)
 ' CMakeLists.txt
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION_TWEAK 0)
+$ gsed -i 's/add_subdirectory(third-party/gtest)//' CMakeLists.txt
+$ gsed -i 's/gtest_main/GTest::main/' CMakeLists.txt
+удаляет gtest,удаляет строки, добавляет строки в cmakelists
+
+$ cmake -H. -B_builds -DBUILD_TESTS=ON
+$ cmake --build _builds
+$ cmake --build _builds --target test
+$ ls -la $HOME/.hunter
+собирает проект, делает тесты, показывает зависимости hunter
+
+
+$ git clone https://github.com/cpp-pm/hunter $HOME/projects/hunter
+$ export HUNTER_ROOT=$HOME/projects/hunter
+$ rm -rf _builds
+$ cmake -H. -B_builds -DBUILD_TESTS=ON
+$ cmake --build _builds
+$ cmake --build _builds --target test
+настройка для работы с hunter, сборка и тестирование
+
+$ cat $HUNTER_ROOT/cmake/configs/default.cmake | grep GTest
+$ cat $HUNTER_ROOT/cmake/projects/GTest/hunter.cmake
+$ mkdir cmake/Hunter
+показывает настройки gtest, выводит содержимое hunter, создает папку
+
+$ cat > cmake/Hunter/config.cmake <<EOF
+hunter_config(GTest VERSION 1.7.0-hunter-9)
+EOF
+# add LOCAL in HunterGate function
+создает файл
+
+$ mkdir demo
+$ cat > demo/main.cpp <<EOF
+#include <print.hpp>
+
+#include <cstdlib>
+
+int main(int argc, char* argv[])
+{
+  const char* log_path = std::getenv("LOG_PATH");
+  if (log_path == nullptr)
+  {
+    std::cerr << "undefined environment variable: LOG_PATH" << std::endl;
+    return 1;
+  }
+  std::string text;
+  while (std::cin >> text)
+  {
+    std::ofstream out{log_path, std::ios_base::app};
+    print(text, out);
+    out << std::endl;
+  }
+}
+EOF
+создает директорию и файл
+
+$ gsed -i '/endif()/a\
+
+add_executable(demo ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp)
+target_link_libraries(demo print)
+install(TARGETS demo RUNTIME DESTINATION bin)
 ' CMakeLists.txt
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION_PATCH 0)
-' CMakeLists.txt
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION_MINOR 1)
-' CMakeLists.txt
-$ gsed -i '/project(print)/a\
-set(PRINT_VERSION_MAJOR 0)
-' CMakeLists.txt
-$ git diff
-добавляет версии, формирует полную версию, отображает изменения
+вставляет строки в cmakelists
 
 
+$ mkdir tools
+$ git submodule add https://github.com/ruslo/polly tools/polly
+$ tools/polly/bin/polly.py --test
+$ tools/polly/bin/polly.py --install
+$ tools/polly/bin/polly.py --toolchain clang-cxx14
+добавляет polly, настраивает окружение, генерирует проект
 
-$ touch DESCRIPTION && edit DESCRIPTION
-$ touch ChangeLog.md
-$ export DATE="`LANG=en_US date +'%a %b %d %Y'`"
-$ cat > ChangeLog.md <<EOF
-* ${DATE} ${GITHUB_USERNAME} <${GITHUB_EMAIL}> 0.1.0.0
-- Initial RPM release
-EOF
-файл с историей изменений
-
-$ cat > CPackConfig.cmake <<EOF
-include(InstallRequiredSystemLibraries)
-EOF
-
-
-
-$ cat >> CPackConfig.cmake <<EOF
-set(CPACK_PACKAGE_CONTACT ${GITHUB_EMAIL})
-set(CPACK_PACKAGE_VERSION_MAJOR \${PRINT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR \${PRINT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH \${PRINT_VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION_TWEAK \${PRINT_VERSION_TWEAK})
-set(CPACK_PACKAGE_VERSION \${PRINT_VERSION})
-set(CPACK_PACKAGE_DESCRIPTION_FILE \${CMAKE_CURRENT_SOURCE_DIR}/DESCRIPTION)
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "static C++ library for printing")
-EOF
-Компоненты версии, контактные данные
-
-$ cat >> CPackConfig.cmake <<EOF
-
-set(CPACK_RESOURCE_FILE_LICENSE \${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
-set(CPACK_RESOURCE_FILE_README \${CMAKE_CURRENT_SOURCE_DIR}/README.md)
-EOF
- указывает упаковщику , где находятся  лицензия и документация
-
- 
-$ cat >> CPackConfig.cmake <<EOF
-
-set(CPACK_RPM_PACKAGE_NAME "print-devel")
-set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_GROUP "print")
-set(CPACK_RPM_CHANGELOG_FILE \${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog.md)
-set(CPACK_RPM_PACKAGE_RELEASE 1)
-EOF
- настраивает параметры для генерации RPM-пакета
-
-
-
- 
-$ cat >> CPackConfig.cmake <<EOF
-
-set(CPACK_DEBIAN_PACKAGE_NAME "libprint-dev")
-set(CPACK_DEBIAN_PACKAGE_PREDEPENDS "cmake >= 3.0")
-set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
-EOF
-настройки для генерации DEB-пакетов
-
-$ cat >> CPackConfig.cmake <<EOF
-
-include(CPack)
-EOF
-
-Файл конфигурации для генерации пакетов через CPack
-
-$ cat >> CMakeLists.txt <<EOF
-
-include(CPackConfig.cmake)
-EOF
-Подключает файл CPack к основному процессу сборки
-
-$ gsed -i 's/lab05/lab06/g' README.md
-Обновляет упоминания старого названия проекта lab05 на новое lab06
-
-$ git add .
-$ git commit -m"added cpack config"
-$ git tag v0.1.0.0
-$ git push origin master --tags
-пуш с тегами
-
-$ travis login --auto
-$ travis enable
-настравивают тревис
-
-$ cmake -H. -B_build
-$ cmake --build _build
-$ cd _build
-$ cpack -G "TGZ"
-$ cd ..
-сборка проекта и генерация пакетов с помощью CMake и CPack
-
-$ cmake -H. -B_build -DCPACK_GENERATOR="TGZ"
-$ cmake --build _build --target package
-ссборка проекта и генерация пакетов в формате tgz
-
-$ mkdir artifacts
-$ mv _build/*.tar.gz artifacts
-$ tree artifacts
-создает папку, перемещает все файлы с расширением .tar.gz из папки _build в artifacts, показывает древо
+Report
 
 $ popd
-$ export LAB_NUMBER=06
+$ export LAB_NUMBER=07
 $ git clone https://github.com/tp-labs/lab${LAB_NUMBER} tasks/lab${LAB_NUMBER}
 $ mkdir reports/lab${LAB_NUMBER}
 $ cp tasks/lab${LAB_NUMBER}/README.md reports/lab${LAB_NUMBER}/REPORT.md
